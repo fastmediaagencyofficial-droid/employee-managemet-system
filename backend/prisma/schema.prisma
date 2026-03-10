@@ -1,0 +1,584 @@
+// This is your Prisma schema file
+// Learn more: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User Model (Authentication)
+model User {
+    id            String    @id @default(uuid())
+    email         String    @unique
+    password      String
+    name          String?
+    role          Role      @default(EMPLOYEE)
+    passwordResetToken   String?
+    passwordResetExpires DateTime?
+    emailVerified DateTime?
+    image         String?
+    resetToken    String?
+    resetTokenExpiry DateTime?
+    createdAt     DateTime  @default(now())
+    updatedAt     DateTime  @updatedAt
+
+    employee Employee?
+    accounts Account[]
+    sessions Session[]
+    preferences UserPreferences?
+    dashboardPreference DashboardPreference?
+    notifications Notification[]
+
+    @@map("users")
+}
+
+// User Preferences Model
+model UserPreferences {
+    id          String   @id @default(uuid())
+    userId      String   @unique
+    user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    
+    // Notification Settings
+    emailNotifications      Boolean @default(true)
+    leaveRequestUpdates     Boolean @default(true)
+    performanceReviews      Boolean @default(true)
+    
+    // Appearance Settings
+    theme       String   @default("system") // light, dark, system
+    
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+    
+    @@map("user_preferences")
+}
+
+// Employee Model
+model Employee {
+  id              String    @id @default(cuid())
+  userId          String    @unique
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  employeeId      String    @unique
+  firstName       String
+  lastName        String
+  email           String    @unique
+  phone           String?
+  dateOfBirth     DateTime?
+  gender          Gender?
+  address         String?
+  city            String?
+  country         String?
+  postalCode      String?
+  
+  // Additional Personal Information
+  cnic                  String?    @unique  // National ID card number
+  highestQualification  String?             // e.g., "Master's in Computer Science"
+  institute             String?             // e.g., "MIT", "Harvard"
+  
+  // Employment Details
+  position        String
+  departmentId    String
+  department      Department @relation(fields: [departmentId], references: [id])
+  managerId       String?
+  manager         Employee?  @relation("ManagerSubordinate", fields: [managerId], references: [id])
+  subordinates    Employee[] @relation("ManagerSubordinate")
+  
+  salary          Decimal?
+  hourlyRate      Decimal?   // For dynamic salary calculation
+  hireDate        DateTime
+  employmentType  EmploymentType
+  status          EmploymentStatus @default(ACTIVE)
+  
+  shiftId         String?
+  shift           Shift?     @relation(fields: [shiftId], references: [id])
+  
+  // Relations
+  attendance      Attendance[]
+  leaveRequests   LeaveRequest[]
+  performances    Performance[]
+  goals           Goal[]
+  reviews         Review[]
+  reviewsGiven    Review[]     @relation("Reviewer")
+  feedbackGiven   Feedback[]   @relation("FeedbackFrom")
+  feedbackReceived Feedback[]  @relation("FeedbackTo")
+  documents       EmployeeDocument[]
+  
+  // Task Management Relations
+  assignedTasks   Task[]       @relation("AssignedTasks")
+  createdTasks    Task[]       @relation("CreatedTasks")
+  taskComments    TaskComment[]
+  taskAttachments TaskAttachment[]
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  @@map("employees")
+}
+
+// Employee Document Model
+model EmployeeDocument {
+  id          String       @id @default(cuid())
+  employeeId  String
+  employee    Employee     @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  
+  documentType DocumentType
+  fileName    String
+  filePath    String       // Relative path to file
+  fileSize    Int          // Size in bytes
+  mimeType    String       // e.g., "application/pdf"
+  
+  uploadedBy  String?      // User ID who uploaded
+  uploadedAt  DateTime     @default(now())
+  
+  @@map("employee_documents")
+}
+
+// Department Model
+model Department {
+  id          String     @id @default(cuid())
+  name        String     @unique
+  description String?
+  headId      String?
+  
+  employees   Employee[]
+  goals       Goal[]
+  
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  
+  @@map("departments")
+}
+
+// Attendance Model
+model Attendance {
+  id          String    @id @default(cuid())
+  employeeId  String
+  employee    Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  
+  date        DateTime  @default(now())
+  clockIn     DateTime
+  clockOut    DateTime?
+  status      AttendanceStatus
+  hoursWorked Float?    // Calculated daily working hours
+  notes       String?
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  @@map("attendance")
+}
+
+// Leave Request Model
+model LeaveRequest {
+  id          String      @id @default(cuid())
+  employeeId  String
+  employee    Employee    @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  
+  type        LeaveType
+  startDate   DateTime
+  endDate     DateTime
+  reason      String
+  status      RequestStatus @default(PENDING)
+  approvedBy  String?
+  approvedAt  DateTime?
+  
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  @@map("leave_requests")
+}
+
+// Performance Model
+model Performance {
+  id          String    @id @default(cuid())
+  employeeId  String
+  employee    Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  
+  metric      String
+  value       Decimal
+  target      Decimal?
+  period      String    // e.g., "2024-Q1", "2024-01"
+  notes       String?
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  @@map("performances")
+}
+
+// Goal Model
+model Goal {
+  id           String       @id @default(cuid())
+  employeeId   String
+  employee     Employee     @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  
+  departmentId String?
+  department   Department?  @relation(fields: [departmentId], references: [id])
+  
+  title        String
+  description  String?
+  category     GoalCategory @default(INDIVIDUAL)
+  type         GoalType     @default(QUALITATIVE)
+  targetValue  String?
+  currentValue String?
+  progress     Int          @default(0) // 0-100
+  status       GoalStatus   @default(NOT_STARTED)
+  priority     Priority     @default(MEDIUM)
+  startDate    DateTime     @default(now())
+  dueDate      DateTime
+  completedAt  DateTime?
+  
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  
+  @@map("goals")
+}
+
+// Review Cycle Model
+model ReviewCycle {
+  id          String    @id @default(cuid())
+  name        String
+  description String?
+  startDate   DateTime
+  endDate     DateTime
+  status      CycleStatus @default(ACTIVE)
+  
+  reviews     Review[]
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("review_cycles")
+}
+
+// Review Model
+model Review {
+  id            String       @id @default(cuid())
+  employeeId    String
+  employee      Employee     @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  
+  reviewerId    String
+  reviewer      Employee     @relation("Reviewer", fields: [reviewerId], references: [id])
+  
+  cycleId       String?
+  cycle         ReviewCycle? @relation(fields: [cycleId], references: [id])
+  
+  period        String       // e.g., "2024-Q1" (kept for backward compatibility or display)
+  overallRating Int          // 1-5
+  strengths     String?
+  improvements  String?
+  goals         String?
+  comments      String?
+  
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  
+  @@map("reviews")
+}
+
+enum CycleStatus {
+  PLANNING
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+// Feedback Model (360-degree)
+model Feedback {
+  id          String    @id @default(cuid())
+  fromId      String
+  from        Employee  @relation("FeedbackFrom", fields: [fromId], references: [id])
+  toId        String
+  to          Employee  @relation("FeedbackTo", fields: [toId], references: [id])
+  
+  type        FeedbackType
+  rating      Int?      // 1-5
+  comment     String
+  isAnonymous Boolean   @default(false)
+  
+  // Sentiment Analysis
+  sentimentScore Float? // -1 to 1
+  sentimentLabel String? // Positive, Negative, Neutral
+  
+  createdAt   DateTime  @default(now())
+  
+  @@map("feedbacks")
+}
+
+// Shift Model
+model Shift {
+  id          String     @id @default(cuid())
+  name        String
+  startTime   String     // e.g., "09:00"
+  endTime     String     // e.g., "17:00"
+  workDays    String[]   // e.g., ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"]
+  
+  employees   Employee[]
+  
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@map("shifts")
+}
+
+// NextAuth Models
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+  
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// Enums
+enum Role {
+  ADMIN
+  HR
+  MANAGER
+  EMPLOYEE
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  INTERN
+}
+
+enum EmploymentStatus {
+  ACTIVE
+  INACTIVE
+  ON_LEAVE
+  TERMINATED
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+  HALF_DAY
+}
+
+enum LeaveType {
+  SICK
+  CASUAL
+  ANNUAL
+  MATERNITY
+  PATERNITY
+  UNPAID
+}
+
+enum RequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum GoalStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+  OVERDUE
+  CANCELLED
+}
+
+enum GoalCategory {
+  INDIVIDUAL
+  TEAM
+  DEPARTMENT
+}
+
+enum GoalType {
+  QUANTITATIVE
+  QUALITATIVE
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum FeedbackType {
+  PEER
+  MANAGER
+  SELF
+  SUBORDINATE
+}
+
+enum DocumentType {
+  CV
+  RESUME
+  CERTIFICATE
+  CONTRACT
+  ID_CARD
+  OFFER_LETTER
+  OTHER
+}
+
+// Task Management Models
+model Task {
+  id              String        @id @default(cuid())
+  title           String
+  description     String?       @db.Text
+  priority        TaskPriority  @default(MEDIUM)
+  status          TaskStatus    @default(PENDING)
+  category        String?
+  
+  assignedToId    String
+  assignedTo      Employee      @relation("AssignedTasks", fields: [assignedToId], references: [id], onDelete: Cascade)
+  
+  assignedById    String
+  assignedBy      Employee      @relation("CreatedTasks", fields: [assignedById], references: [id])
+  
+  dueDate         DateTime
+  estimatedHours  Float?
+  actualHours     Float?
+  
+  startedAt       DateTime?
+  completedAt     DateTime?
+  
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  
+  comments        TaskComment[]
+  attachments     TaskAttachment[]
+  
+  @@map("tasks")
+}
+
+model TaskComment {
+  id          String    @id @default(cuid())
+  taskId      String
+  task        Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  
+  employeeId  String
+  employee    Employee  @relation(fields: [employeeId], references: [id])
+  
+  comment     String    @db.Text
+  createdAt   DateTime  @default(now())
+  
+  @@map("task_comments")
+}
+
+model TaskAttachment {
+  id          String    @id @default(cuid())
+  taskId      String
+  task        Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  
+  fileName    String
+  filePath    String
+  fileSize    Int
+  mimeType    String
+  
+  uploadedById String
+  uploadedBy   Employee  @relation(fields: [uploadedById], references: [id])
+  
+  createdAt   DateTime  @default(now())
+  
+  @@map("task_attachments")
+}
+
+model DashboardPreference {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  widgetLayout    Json?    // Store widget positions and visibility
+  defaultView     String   @default("overview")
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@map("dashboard_preferences")
+}
+
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  ON_HOLD
+}
+
+enum NotificationType {
+  TASK_ASSIGNED
+  TASK_COMPLETED
+  TASK_DEADLINE
+  TASK_UPDATED
+  LEAVE_APPROVED
+  LEAVE_REJECTED
+  SYSTEM_ANNOUNCEMENT
+}
+
+model Notification {
+  id          String           @id @default(cuid())
+  userId      String
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  type        NotificationType
+  title       String
+  message     String
+  
+  relatedId   String?          // Task ID, Leave ID, etc.
+  relatedType String?          // "TASK", "LEAVE", etc.
+  
+  isRead      Boolean          @default(false)
+  
+  createdAt   DateTime         @default(now())
+  
+  @@map("notifications")
+  @@index([userId, isRead])
+  @@index([createdAt])
+}
+

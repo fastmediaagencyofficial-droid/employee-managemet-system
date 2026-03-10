@@ -1,0 +1,64 @@
+# Environment Variables
+.env
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+backend/dist/
+
+# Cache
+.cache/
+.turbo/
+.parcel-cache/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+backend/uploads/
+
+# OS
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Testing
+coverage/
+.nyc_output/
+
+# Prisma
+prisma/migrations/
+!prisma/migrations/.gitkeep
+
+# Misc
+.vercel
+.eslintcache
+*.tsbuildinfo
+next-env.d.ts
+
+# Secrets (double-check these are ignored)
+*.pem
+*.key
+*.cert
+.env.production.local
