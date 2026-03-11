@@ -37,7 +37,8 @@ export default function NotificationDropdown({ onNotificationRead, onClose }: No
     const fetchNotifications = async () => {
         try {
             const token = localStorage.getItem('accessToken');
-            const response = await fetch('http://localhost:5000/api/notifications?limit=10', {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL ? `${process.env.NEXT_PUBLIC_API_URL}/api` : 'http://localhost:5000/api';
+            const response = await fetch(`${apiUrl}/notifications?limit=10`, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
 
@@ -55,7 +56,8 @@ export default function NotificationDropdown({ onNotificationRead, onClose }: No
     const markAsRead = async (id: string) => {
         try {
             const token = localStorage.getItem('accessToken');
-            const response = await fetch(`http://localhost:5000/api/notifications/${id}/read`, {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL ? `${process.env.NEXT_PUBLIC_API_URL}/api` : 'http://localhost:5000/api';
+            const response = await fetch(`${apiUrl}/notifications/${id}/read`, {
                 method: 'PATCH',
                 headers: { 'Authorization': `Bearer ${token}` },
             });
@@ -74,7 +76,8 @@ export default function NotificationDropdown({ onNotificationRead, onClose }: No
     const markAllAsRead = async () => {
         try {
             const token = localStorage.getItem('accessToken');
-            const response = await fetch('http://localhost:5000/api/notifications/read-all', {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL ? `${process.env.NEXT_PUBLIC_API_URL}/api` : 'http://localhost:5000/api';
+            const response = await fetch(`${apiUrl}/notifications/read-all`, {
                 method: 'PATCH',
                 headers: { 'Authorization': `Bearer ${token}` },
             });
@@ -93,7 +96,8 @@ export default function NotificationDropdown({ onNotificationRead, onClose }: No
     const deleteNotification = async (id: string) => {
         try {
             const token = localStorage.getItem('accessToken');
-            const response = await fetch(`http://localhost:5000/api/notifications/${id}`, {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL ? `${process.env.NEXT_PUBLIC_API_URL}/api` : 'http://localhost:5000/api';
+            const response = await fetch(`${apiUrl}/notifications/${id}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` },
             });

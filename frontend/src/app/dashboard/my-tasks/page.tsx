@@ -42,7 +42,8 @@ export default function MyTasksPage() {
     const fetchMyTasks = async () => {
         try {
             const token = localStorage.getItem('accessToken');
-            const response = await fetch('http://localhost:5000/api/tasks/my-tasks', {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL ? `${process.env.NEXT_PUBLIC_API_URL}/api` : 'http://localhost:5000/api';
+            const response = await fetch(`${apiUrl}/tasks/my-tasks`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },
@@ -65,7 +66,8 @@ export default function MyTasksPage() {
     const fetchTaskStatistics = async () => {
         try {
             const token = localStorage.getItem('accessToken');
-            const response = await fetch('http://localhost:5000/api/tasks/statistics', {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL ? `${process.env.NEXT_PUBLIC_API_URL}/api` : 'http://localhost:5000/api';
+            const response = await fetch(`${apiUrl}/tasks/statistics`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },

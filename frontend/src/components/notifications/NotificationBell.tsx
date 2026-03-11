@@ -27,7 +27,8 @@ export default function NotificationBell() {
     const fetchUnreadCount = async () => {
         try {
             const token = localStorage.getItem('accessToken');
-            const response = await fetch('http://localhost:5000/api/notifications/unread-count', {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL ? `${process.env.NEXT_PUBLIC_API_URL}/api` : 'http://localhost:5000/api';
+            const response = await fetch(`${apiUrl}/notifications/unread-count`, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
 

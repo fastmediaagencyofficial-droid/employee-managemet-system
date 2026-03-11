@@ -65,7 +65,8 @@ export default function TaskDetailPage() {
     const fetchTaskDetail = useCallback(async () => {
         try {
             const token = localStorage.getItem('accessToken');
-            const response = await fetch(`http://localhost:5000/api/tasks/${taskId}`, {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL ? `${process.env.NEXT_PUBLIC_API_URL}/api` : 'http://localhost:5000/api';
+            const response = await fetch(`${apiUrl}/tasks/${taskId}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },
@@ -95,7 +96,8 @@ export default function TaskDetailPage() {
 
         try {
             const token = localStorage.getItem('accessToken');
-            const response = await fetch(`http://localhost:5000/api/tasks/${taskId}/status`, {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL ? `${process.env.NEXT_PUBLIC_API_URL}/api` : 'http://localhost:5000/api';
+            const response = await fetch(`${apiUrl}/tasks/${taskId}/status`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -132,7 +134,8 @@ export default function TaskDetailPage() {
 
         try {
             const token = localStorage.getItem('accessToken');
-            const response = await fetch(`http://localhost:5000/api/tasks/${taskId}/comments`, {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL ? `${process.env.NEXT_PUBLIC_API_URL}/api` : 'http://localhost:5000/api';
+            const response = await fetch(`${apiUrl}/tasks/${taskId}/comments`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

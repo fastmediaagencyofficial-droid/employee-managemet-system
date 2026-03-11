@@ -330,7 +330,8 @@ export default function SettingsPage() {
                                         setLoading(true);
                                         try {
                                             const token = localStorage.getItem('accessToken');
-                                            const response = await fetch('http://localhost:5000/api/auth/create-employee-record', {
+                                            const apiUrl = process.env.NEXT_PUBLIC_API_URL ? `${process.env.NEXT_PUBLIC_API_URL}/api` : 'http://localhost:5000/api';
+                                            const response = await fetch(`${apiUrl}/auth/create-employee-record`, {
                                                 method: 'POST',
                                                 headers: {
                                                     'Authorization': `Bearer ${token}`,

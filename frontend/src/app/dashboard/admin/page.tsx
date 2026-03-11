@@ -31,18 +31,22 @@ export default function AdminDashboardPage() {
         try {
             const token = localStorage.getItem('accessToken');
 
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL 
+                ? `${process.env.NEXT_PUBLIC_API_URL}/api`
+                : 'http://localhost:5000/api';
+
             // Fetch employees
-            const employeesResponse = await fetch('http://localhost:5000/api/employees', {
+            const employeesResponse = await fetch(`${apiUrl}/employees`, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
 
             // Fetch departments
-            const departmentsResponse = await fetch('http://localhost:5000/api/departments', {
+            const departmentsResponse = await fetch(`${apiUrl}/departments`, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
 
             // Fetch all tasks
-            const tasksResponse = await fetch('http://localhost:5000/api/tasks', {
+            const tasksResponse = await fetch(`${apiUrl}/tasks`, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
 
