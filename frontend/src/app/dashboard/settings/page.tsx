@@ -43,8 +43,7 @@ export default function SettingsPage() {
     const fetchUserProfile = async () => {
         try {
             const token = localStorage.getItem('accessToken');
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL ? `${process.env.NEXT_PUBLIC_API_URL}/api` : 'http://localhost:5000/api';
-            const response = await fetch(`${apiUrl}/auth/me`, {
+            const response = await fetch('/api/auth/me', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             const data = await response.json();
@@ -63,8 +62,7 @@ export default function SettingsPage() {
     const fetchPreferences = async () => {
         try {
             const token = localStorage.getItem('accessToken');
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL ? `${process.env.NEXT_PUBLIC_API_URL}/api` : 'http://localhost:5000/api';
-            const response = await fetch(`${apiUrl}/preferences`, {
+            const response = await fetch('/api/preferences', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             const data = await response.json();
@@ -86,8 +84,7 @@ export default function SettingsPage() {
         setLoading(true);
         try {
             const token = localStorage.getItem('accessToken');
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL ? `${process.env.NEXT_PUBLIC_API_URL}/api` : 'http://localhost:5000/api';
-            const response = await fetch(`${apiUrl}/auth/update-profile`, {
+            const response = await fetch('/api/auth/update-profile', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -124,8 +121,7 @@ export default function SettingsPage() {
         setLoading(true);
         try {
             const token = localStorage.getItem('accessToken');
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL ? `${process.env.NEXT_PUBLIC_API_URL}/api` : 'http://localhost:5000/api';
-            const response = await fetch(`${apiUrl}/auth/change-password`, {
+            const response = await fetch('/api/auth/change-password', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -160,8 +156,7 @@ export default function SettingsPage() {
 
         try {
             const token = localStorage.getItem('accessToken');
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL ? `${process.env.NEXT_PUBLIC_API_URL}/api` : 'http://localhost:5000/api';
-            const response = await fetch(`${apiUrl}/preferences`, {
+            const response = await fetch('/api/preferences', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -335,8 +330,7 @@ export default function SettingsPage() {
                                         setLoading(true);
                                         try {
                                             const token = localStorage.getItem('accessToken');
-                                            const apiUrl = process.env.NEXT_PUBLIC_API_URL ? `${process.env.NEXT_PUBLIC_API_URL}/api` : 'http://localhost:5000/api';
-                                            const response = await fetch(`${apiUrl}/auth/create-employee-record`, {
+                                            const response = await fetch('/api/auth/create-employee-record', {
                                                 method: 'POST',
                                                 headers: {
                                                     'Authorization': `Bearer ${token}`,

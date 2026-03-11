@@ -9,7 +9,7 @@ app.listen(PORT, () => {
     console.log('🚀 ========================================');
     console.log(`🚀 Server running on port ${PORT}`);
     console.log(`✅ Environment: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`📡 API URL: http://localhost:${PORT}`);
-    console.log(`📊 Health Check: http://localhost:${PORT}/health`);
+    console.log(`📡 API URL: http://0.0.0.0:${PORT}`);
+    console.log(`📊 Health Check: http://0.0.0.0:${PORT}/health`);
     console.log('🚀 ========================================');
 });

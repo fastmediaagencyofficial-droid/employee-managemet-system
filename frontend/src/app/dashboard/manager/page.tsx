@@ -37,17 +37,13 @@ export default function ManagerDashboardPage() {
         try {
             const token = localStorage.getItem('accessToken');
 
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL 
-                ? `${process.env.NEXT_PUBLIC_API_URL}/api`
-                : 'http://localhost:5000/api';
-
             // Fetch team tasks
-            const teamTasksResponse = await fetch(`${apiUrl}/tasks/team-tasks`, {
+            const teamTasksResponse = await fetch('/api/tasks/team-tasks', {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
 
             // Fetch employees (team members)
-            const employeesResponse = await fetch(`${apiUrl}/employees`, {
+            const employeesResponse = await fetch('/api/employees', {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
 

@@ -83,11 +83,7 @@ export default function PerformanceDashboard() {
     const fetchGoals = async () => {
         try {
             const token = localStorage.getItem('accessToken');
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL 
-                ? `${process.env.NEXT_PUBLIC_API_URL}/api`
-                : 'http://localhost:5000/api';
-                
-            const response = await fetch(`${apiUrl}/performance/goals`, {
+            const response = await fetch('/api/performance/goals', {
                 headers: { Authorization: `Bearer ${token}` },
             });
             const data = await response.json();
@@ -104,11 +100,7 @@ export default function PerformanceDashboard() {
     const fetchMetrics = async () => {
         try {
             const token = localStorage.getItem('accessToken');
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL 
-                ? `${process.env.NEXT_PUBLIC_API_URL}/api`
-                : 'http://localhost:5000/api';
-                
-            const response = await fetch(`${apiUrl}/performance/metrics`, {
+            const response = await fetch('/api/performance/metrics', {
                 headers: { Authorization: `Bearer ${token}` },
             });
             const data = await response.json();
@@ -125,11 +117,7 @@ export default function PerformanceDashboard() {
     const fetchTrends = async () => {
         try {
             const token = localStorage.getItem('accessToken');
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL 
-                ? `${process.env.NEXT_PUBLIC_API_URL}/api`
-                : 'http://localhost:5000/api';
-                
-            const response = await fetch(`${apiUrl}/performance/trends`, {
+            const response = await fetch('/api/performance/trends', {
                 headers: { Authorization: `Bearer ${token}` },
             });
             const data = await response.json();

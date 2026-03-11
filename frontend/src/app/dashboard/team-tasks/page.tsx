@@ -22,8 +22,8 @@ export default function TeamTasksPage() {
     const fetchTeamTasks = async () => {
         try {
             const token = localStorage.getItem('accessToken');
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL ? `${process.env.NEXT_PUBLIC_API_URL}/api` : 'http://localhost:5000/api';
-            const response = await fetch(`${apiUrl}/tasks/team-tasks`, {
+            
+            const response = await fetch('/api/tasks/team-tasks', {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },

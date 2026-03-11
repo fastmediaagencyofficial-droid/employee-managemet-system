@@ -16,9 +16,9 @@ export const getAllGoals = async (req: AuthRequest, res: Response) => {
         });
 
         if (!employee) {
-            return res.status(404).json({
-                success: false,
-                message: 'Employee not found',
+            return res.json({
+                success: true,
+                data: [],
             });
         }
 
@@ -241,9 +241,12 @@ export const getPerformanceMetrics = async (req: AuthRequest, res: Response) => 
         });
 
         if (!employee) {
-            return res.status(404).json({
-                success: false,
-                message: 'Employee not found',
+            return res.json({
+                success: true,
+                data: {
+                    goals: { total: 0, completed: 0, inProgress: 0, onTime: 0, late: 0, averageProgress: 0 },
+                    reviews: { total: 0, averageRating: 0, recent: [] },
+                },
             });
         }
 
@@ -316,10 +319,17 @@ export const getPerformanceTrends = async (req: AuthRequest, res: Response) => {
         });
 
         if (!employee) {
-            return res.status(404).json({
-                success: false,
-                message: 'Employee not found',
-            });
+            const emptyTrends = [];
+            for (let i = 5; i >= 0; i--) {
+                const date = new Date();
+                date.setMonth(date.getMonth() - i);
+                emptyTrends.push({
+                    month: date.toLocaleString('default', { month: 'short' }),
+                    completed: 0,
+                    avgRating: 0,
+                });
+            }
+            return res.json({ success: true, data: emptyTrends });
         }
 
         // Get goals completed in each of the last 6 months

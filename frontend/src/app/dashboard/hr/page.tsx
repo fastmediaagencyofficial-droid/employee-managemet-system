@@ -29,12 +29,8 @@ export default function HRDashboardPage() {
         try {
             const token = localStorage.getItem('accessToken');
 
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL 
-                ? `${process.env.NEXT_PUBLIC_API_URL}/api`
-                : 'http://localhost:5000/api';
-
             // Fetch employees
-            const employeesResponse = await fetch(`${apiUrl}/employees`, {
+            const employeesResponse = await fetch('/api/employees', {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
 

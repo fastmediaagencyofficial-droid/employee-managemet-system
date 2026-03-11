@@ -31,22 +31,18 @@ export default function AdminDashboardPage() {
         try {
             const token = localStorage.getItem('accessToken');
 
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL 
-                ? `${process.env.NEXT_PUBLIC_API_URL}/api`
-                : 'http://localhost:5000/api';
-
             // Fetch employees
-            const employeesResponse = await fetch(`${apiUrl}/employees`, {
+            const employeesResponse = await fetch('/api/employees', {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
 
             // Fetch departments
-            const departmentsResponse = await fetch(`${apiUrl}/departments`, {
+            const departmentsResponse = await fetch('/api/departments', {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
 
             // Fetch all tasks
-            const tasksResponse = await fetch(`${apiUrl}/tasks`, {
+            const tasksResponse = await fetch('/api/tasks', {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
 
@@ -73,6 +69,17 @@ export default function AdminDashboardPage() {
                         icon: <Building2 className="h-4 w-4 text-muted-foreground" />,
                     })),
                 });
+            } else {
+                console.error('Dashboard fetch failed:', {
+                    employees: employeesResponse.status,
+                    departments: departmentsResponse.status,
+                    tasks: tasksResponse.status
+                });
+                if (employeesResponse.status === 401 || departmentsResponse.status === 401 || tasksResponse.status === 401) {
+                    toast.error('Session expired. Please login again.');
+                } else {
+                    toast.error('Failed to load dashboard data');
+                }
             }
         } catch (error) {
             console.error('Failed to fetch dashboard data:', error);

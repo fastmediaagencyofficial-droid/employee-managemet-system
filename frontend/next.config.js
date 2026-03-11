@@ -3,7 +3,7 @@ const nextConfig = {
     reactStrictMode: true,
     swcMinify: true,
     images: {
-        domains: ['localhost', 'randomuser.me'],
+        domains: ['randomuser.me'],
         formats: ['image/webp', 'image/avif'],
     },
     env: {

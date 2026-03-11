@@ -50,8 +50,7 @@ export default function CreateTaskDialog({ open, onOpenChange, onSuccess }: Crea
     const fetchEmployees = async () => {
         try {
             const token = localStorage.getItem('accessToken');
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL ? `${process.env.NEXT_PUBLIC_API_URL}/api` : 'http://localhost:5000/api';
-            const response = await fetch(`${apiUrl}/employees`, {
+            const response = await fetch('/api/employees', {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },
@@ -78,8 +77,7 @@ export default function CreateTaskDialog({ open, onOpenChange, onSuccess }: Crea
 
         try {
             const token = localStorage.getItem('accessToken');
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL ? `${process.env.NEXT_PUBLIC_API_URL}/api` : 'http://localhost:5000/api';
-            const response = await fetch(`${apiUrl}/tasks`, {
+            const response = await fetch('/api/tasks', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

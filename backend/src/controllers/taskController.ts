@@ -492,9 +492,10 @@ export const getMyTasks = async (req: AuthRequest, res: Response) => {
         const { status } = req.query;
 
         if (!employeeId) {
-            return res.status(404).json({
-                success: false,
-                message: 'Employee record not found for this user',
+            // Admin/HR users without an employee record have no personal tasks
+            return res.json({
+                success: true,
+                data: [],
             });
         }
 

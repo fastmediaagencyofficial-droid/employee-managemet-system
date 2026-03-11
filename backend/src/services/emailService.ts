@@ -69,7 +69,7 @@ export const sendPasswordResetEmail = async (
   resetToken: string,
   name: string
 ): Promise<boolean> => {
-  const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password?token=${resetToken}`;
+  const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
 
   const html = `
     <!DOCTYPE html>
@@ -257,7 +257,7 @@ export const sendWelcomeEmail = async (
   name: string,
   password: string,
   employeeId: string,
-  loginUrl: string = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/login`
+  loginUrl: string = `${process.env.FRONTEND_URL}/login`
 ): Promise<boolean> => {
   const html = `
     <!DOCTYPE html>

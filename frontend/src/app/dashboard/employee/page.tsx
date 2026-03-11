@@ -47,17 +47,13 @@ export default function EmployeeDashboardPage() {
         try {
             const token = localStorage.getItem('accessToken');
 
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL 
-                ? `${process.env.NEXT_PUBLIC_API_URL}/api`
-                : 'http://localhost:5000/api';
-
             // Fetch task statistics
-            const tasksResponse = await fetch(`${apiUrl}/tasks/statistics`, {
+            const tasksResponse = await fetch('/api/tasks/statistics', {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
 
             // Fetch recent tasks
-            const recentTasksResponse = await fetch(`${apiUrl}/tasks/my-tasks?status=PENDING`, {
+            const recentTasksResponse = await fetch('/api/tasks/my-tasks?status=PENDING', {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
 

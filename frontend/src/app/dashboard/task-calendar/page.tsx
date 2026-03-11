@@ -55,8 +55,8 @@ export default function TaskCalendarPage() {
         try {
             const token = localStorage.getItem('accessToken');
             const url = statusFilter === 'all'
-                ? 'http://localhost:5000/api/tasks/my-tasks'
-                : `http://localhost:5000/api/tasks/my-tasks?status=${statusFilter}`;
+                ? '/api/tasks/my-tasks'
+                : `/api/tasks/my-tasks?status=${statusFilter}`;
 
             const response = await fetch(url, {
                 headers: { 'Authorization': `Bearer ${token}` },

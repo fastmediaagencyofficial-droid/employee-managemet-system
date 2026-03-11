@@ -42,10 +42,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             // Call logout API
             const token = localStorage.getItem('accessToken');
             if (token) {
-                const apiUrl = process.env.NEXT_PUBLIC_API_URL 
-                    ? `${process.env.NEXT_PUBLIC_API_URL}/api`
-                    : 'http://localhost:5000/api';
-                await fetch(`${apiUrl}/auth/logout`, {
+                await fetch('/api/auth/logout', {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`,

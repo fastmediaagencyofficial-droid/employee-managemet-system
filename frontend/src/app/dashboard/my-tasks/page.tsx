@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import TaskList from '@/components/tasks/TaskList';
 import CreateTaskDialog from '@/components/tasks/CreateTaskDialog';
@@ -28,13 +28,15 @@ export default function MyTasksPage() {
     const [userRole, setUserRole] = useState<string>('');
 
     useEffect(() => {
-        // Get user role from localStorage
-        const user = localStorage.getItem('user');
-        if (user) {
-            const userData = JSON.parse(user);
-            setUserRole(userData.role);
+        try {
+            const user = localStorage.getItem('user');
+            if (user) {
+                const userData = JSON.parse(user);
+                setUserRole(userData.role);
+            }
+        } catch (error) {
+            console.error('Failed to parse user data:', error);
         }
-
         fetchMyTasks();
         fetchTaskStatistics();
     }, []);
@@ -42,18 +44,16 @@ export default function MyTasksPage() {
     const fetchMyTasks = async () => {
         try {
             const token = localStorage.getItem('accessToken');
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL ? `${process.env.NEXT_PUBLIC_API_URL}/api` : 'http://localhost:5000/api';
-            const response = await fetch(`${apiUrl}/tasks/my-tasks`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
+            const response = await fetch('/api/tasks/my-tasks', {
+                headers: { 'Authorization': `Bearer ${token}` },
             });
 
             if (response.ok) {
                 const data = await response.json();
                 setTasks(data.data || []);
             } else {
-                toast.error('Failed to fetch tasks');
+                const data = await response.json();
+                toast.error(data.message || 'Failed to fetch tasks');
             }
         } catch (error) {
             console.error('Failed to fetch tasks:', error);
@@ -66,11 +66,8 @@ export default function MyTasksPage() {
     const fetchTaskStatistics = async () => {
         try {
             const token = localStorage.getItem('accessToken');
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL ? `${process.env.NEXT_PUBLIC_API_URL}/api` : 'http://localhost:5000/api';
-            const response = await fetch(`${apiUrl}/tasks/statistics`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
+            const response = await fetch('/api/tasks/statistics', {
+                headers: { 'Authorization': `Bearer ${token}` },
             });
 
             if (response.ok) {

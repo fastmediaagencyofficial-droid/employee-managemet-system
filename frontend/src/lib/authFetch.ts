@@ -3,9 +3,7 @@
  * Automatically includes auth token from localStorage in all requests
  */
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL 
-  ? `${process.env.NEXT_PUBLIC_API_URL}/api`
-  : 'http://localhost:5000/api';
+const API_BASE_URL = '/api';
 
 interface FetchOptions extends RequestInit {
     skipAuth?: boolean;

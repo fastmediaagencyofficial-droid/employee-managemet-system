@@ -1,8 +1,6 @@
 import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig, AxiosResponse } from 'axios';
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL 
-  ? `${process.env.NEXT_PUBLIC_API_URL}/api`
-  : 'http://localhost:5000/api';
+const BASE_URL = '/api';
 
 interface TokenRefreshQueue {
     resolve: (value: string) => void;

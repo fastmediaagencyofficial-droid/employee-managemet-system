@@ -65,8 +65,7 @@ export default function TaskDetailPage() {
     const fetchTaskDetail = useCallback(async () => {
         try {
             const token = localStorage.getItem('accessToken');
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL ? `${process.env.NEXT_PUBLIC_API_URL}/api` : 'http://localhost:5000/api';
-            const response = await fetch(`${apiUrl}/tasks/${taskId}`, {
+            const response = await fetch(`/api/tasks/${taskId}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },
@@ -75,6 +74,9 @@ export default function TaskDetailPage() {
             if (response.ok) {
                 const data = await response.json();
                 setTask(data.data);
+                if (data.data.actualHours) {
+                    setActualHours(data.data.actualHours.toString());
+                }
             } else {
                 toast.error('Failed to fetch task details');
                 router.push('/dashboard/my-tasks');
@@ -96,8 +98,7 @@ export default function TaskDetailPage() {
 
         try {
             const token = localStorage.getItem('accessToken');
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL ? `${process.env.NEXT_PUBLIC_API_URL}/api` : 'http://localhost:5000/api';
-            const response = await fetch(`${apiUrl}/tasks/${taskId}/status`, {
+            const response = await fetch(`/api/tasks/${taskId}/status`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -105,7 +106,7 @@ export default function TaskDetailPage() {
                 },
                 body: JSON.stringify({
                     status: newStatus,
-                    actualHours: newStatus === 'COMPLETED' && actualHours ? parseFloat(actualHours) : null,
+                    actualHours: (newStatus === 'COMPLETED' && actualHours) ? parseFloat(actualHours) : null,
                 }),
             });
 
@@ -134,8 +135,7 @@ export default function TaskDetailPage() {
 
         try {
             const token = localStorage.getItem('accessToken');
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL ? `${process.env.NEXT_PUBLIC_API_URL}/api` : 'http://localhost:5000/api';
-            const response = await fetch(`${apiUrl}/tasks/${taskId}/comments`, {
+            const response = await fetch(`/api/tasks/${taskId}/comments`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
