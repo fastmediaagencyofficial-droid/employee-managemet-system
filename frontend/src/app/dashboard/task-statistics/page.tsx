@@ -26,15 +26,14 @@ export default function TaskStatisticsPage() {
     const fetchStatistics = async () => {
         try {
             const token = localStorage.getItem('accessToken');
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL ? `${process.env.NEXT_PUBLIC_API_URL}/api` : 'http://localhost:5000/api';
 
             // Fetch task statistics
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL ? `${process.env.NEXT_PUBLIC_API_URL}/api` : 'http://localhost:5000/api';
             const statsResponse = await fetch(`${apiUrl}/tasks/statistics`, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
 
             // Fetch all tasks for detailed analysis
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL ? `${process.env.NEXT_PUBLIC_API_URL}/api` : 'http://localhost:5000/api';
             const tasksResponse = await fetch(`${apiUrl}/tasks/my-tasks`, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
