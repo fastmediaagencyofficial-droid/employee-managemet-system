@@ -139,10 +139,6 @@ xfastgroup001@gmail.com (Administrator)
 hafsaakbar071@gmail.com (HR Manager)
 
 
-Super Admin: fastmediaagencyofficial@gmail.com / KAKKEZg6HpbruJHU!@#
-Admin: xfastgroup001@gmail.com / LCZlBkIxDkmLjflv!@#
-HR: hafsaakbar071@gmail.com / dA/bm1BIW5ZXUWjn!@#
-
 
 2. **Explore** the dashboard and features
 

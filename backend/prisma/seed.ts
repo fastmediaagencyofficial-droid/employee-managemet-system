@@ -48,8 +48,8 @@ async function main() {
     });
 
     await prisma.employee.upsert({
-        where: { userId: superAdmin.id },
-        update: {},
+        where: { employeeId: 'EMP001' },
+        update: { userId: superAdmin.id },
         create: {
             userId: superAdmin.id,
             employeeId: 'EMP001',
@@ -78,8 +78,8 @@ async function main() {
     });
 
     await prisma.employee.upsert({
-        where: { userId: adminUser.id },
-        update: {},
+        where: { employeeId: 'EMP002' },
+        update: { userId: adminUser.id },
         create: {
             userId: adminUser.id,
             employeeId: 'EMP002',
@@ -108,8 +108,8 @@ async function main() {
     });
 
     await prisma.employee.upsert({
-        where: { userId: hrManager.id },
-        update: {},
+        where: { employeeId: 'EMP003' },
+        update: { userId: hrManager.id },
         create: {
             userId: hrManager.id,
             employeeId: 'EMP003',
