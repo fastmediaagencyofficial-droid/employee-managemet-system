@@ -7,7 +7,7 @@ const nextConfig = {
         formats: ['image/webp', 'image/avif'],
     },
     env: {
-        NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000',
+        NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'https://employee-managemet-system-production.up.railway.app',
     },
     async rewrites() {
         let apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -15,8 +15,8 @@ const nextConfig = {
         // Validation: Check if the API URL is valid (starts with http/https)
         if (!apiUrl || !apiUrl.startsWith('http')) {
             console.warn('WARNING: INVALID NEXT_PUBLIC_API_URL DETECTED:', apiUrl);
-            console.warn('Fallback to http://localhost:5000 to prevent build failure.');
-            apiUrl = 'http://localhost:5000';
+            console.warn('Fallback to https://employee-managemet-system-production.up.railway.app to prevent build failure.');
+            apiUrl = 'https://employee-managemet-system-production.up.railway.app';
         }
 
         return [
