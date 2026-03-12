@@ -15,7 +15,7 @@ export default function Navbar() {
             {/* Logo */}
             <div className="flex items-center gap-3">
                 <Image
-                    src="/logo.png"
+                    src="/fast-managemet.jpeg"
                     alt="Fast Management System"
                     width={52}
                     height={52}
