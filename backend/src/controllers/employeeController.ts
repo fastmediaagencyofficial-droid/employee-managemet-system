@@ -180,23 +180,26 @@ export const createEmployee = async (req: AuthRequest, res: Response) => {
             return res.status(400).json({ success: false, message: 'Phone number already exists' });
         }
 
-        // Generate employee ID by finding the highest existing ID
-        const lastEmployee = await prisma.employee.findFirst({
-            orderBy: { createdAt: 'desc' },
+        // Generate employee ID by safely finding the absolute maximum numerical ID
+        // Note: fetching all IDs avoids string alphabetical sort problems (e.g., 'EMP003' > 'EMP0004')
+        const allEmployees = await prisma.employee.findMany({
             select: { employeeId: true }
         });
         
-        let nextNumber = 1;
-        if (lastEmployee && lastEmployee.employeeId && lastEmployee.employeeId.startsWith('EMP')) {
-            const lastIdParts = lastEmployee.employeeId.match(/\d+$/);
-            if (lastIdParts) {
-                nextNumber = parseInt(lastIdParts[0], 10) + 1;
-            } else {
-                const count = await prisma.employee.count();
-                nextNumber = count + 1;
+        let maxId = 0;
+        for (const emp of allEmployees) {
+            if (emp.employeeId && emp.employeeId.startsWith('EMP')) {
+                const parts = emp.employeeId.match(/\d+$/);
+                if (parts) {
+                    const num = parseInt(parts[0], 10);
+                    if (!isNaN(num) && num > maxId) {
+                        maxId = num;
+                    }
+                }
             }
         }
         
+        let nextNumber = maxId > 0 ? maxId + 1 : allEmployees.length + 1;
         const employeeId = `EMP${String(nextNumber).padStart(4, '0')}`;
 
         // Validate department existence
