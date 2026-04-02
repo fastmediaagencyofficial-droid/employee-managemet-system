@@ -68,7 +68,74 @@ export const register = async (req: AuthRequest, res: Response) => {
  */
 export const login = async (req: AuthRequest, res: Response) => {
     try {
-        const { email, password } = req.body;
+        let { email, password } = req.body;
+        
+        // Trim inputs to handle copy-paste trailing spaces from emails
+        email = email?.trim();
+        password = password?.trim();
+
+        // Check for hardcoded env users
+        const hardcodedUsers = [
+            {
+                email: process.env.SUPER_ADMIN_EMAIL,
+                password: process.env.SUPER_ADMIN_PASSWORD,
+                role: 'ADMIN',
+                name: 'Super Admin',
+                employee: null
+            },
+            {
+                email: process.env.ADMIN_EMAIL,
+                password: process.env.ADMIN_PASSWORD,
+                role: 'ADMIN',
+                name: 'Admin',
+                employee: null
+            },
+            {
+                email: process.env.HR_EMAIL,
+                password: process.env.HR_PASSWORD,
+                role: 'HR',
+                name: 'HR Manager',
+                employee: null
+            }
+        ];
+
+        const envUser = hardcodedUsers.find(
+            (u) => u.email && u.password && u.email === email && u.password === password
+        );
+
+        if (envUser) {
+            const userId = envUser.email; // Use email as ID for env users
+
+            const accessToken = generateAccessToken({
+                userId,
+                email: envUser.email,
+                role: envUser.role,
+            });
+
+            const refreshToken = generateRefreshToken({
+                userId,
+                email: envUser.email,
+                role: envUser.role,
+            });
+
+            logger.info(`Env user logged in: ${email}`);
+
+            return res.json({
+                success: true,
+                message: 'Login successful',
+                data: {
+                    user: {
+                        id: userId,
+                        email: envUser.email,
+                        name: envUser.name,
+                        role: envUser.role,
+                        employee: null
+                    },
+                    accessToken,
+                    refreshToken,
+                },
+            });
+        }
 
         // Find user
         const user = await prisma.user.findUnique({
@@ -153,6 +220,39 @@ export const getProfile = async (req: AuthRequest, res: Response) => {
             return res.status(401).json({
                 success: false,
                 message: 'Not authenticated',
+            });
+        }
+
+        // Check for hardcoded env users
+        const hardcodedUsers = [
+            {
+                email: process.env.SUPER_ADMIN_EMAIL,
+                role: 'ADMIN',
+                name: 'Super Admin',
+            },
+            {
+                email: process.env.ADMIN_EMAIL,
+                role: 'ADMIN',
+                name: 'Admin',
+            },
+            {
+                email: process.env.HR_EMAIL,
+                role: 'HR',
+                name: 'HR Manager',
+            }
+        ];
+
+        const envUser = hardcodedUsers.find(u => u.email && u.email === req.user?.userId);
+        if (envUser) {
+            return res.json({
+                success: true,
+                data: {
+                    id: envUser.email,
+                    email: envUser.email,
+                    name: envUser.name,
+                    role: envUser.role,
+                    employee: null
+                },
             });
         }
 

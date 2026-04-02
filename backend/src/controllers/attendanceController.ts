@@ -57,14 +57,15 @@ export const clockIn = async (req: AuthRequest, res: Response) => {
             const shiftEnd = endHour * 60 + endMin;
 
             // Allow 30 minutes early clock-in
-            const allowedStart = shiftStart - 30;
+            // const allowedStart = shiftStart - 30;
 
-            if (currentTime < allowedStart || currentTime > shiftEnd) {
-                return res.status(400).json({
-                    success: false,
-                    message: `You can only clock in during your shift (${employee.shift.startTime} - ${employee.shift.endTime})`,
-                });
-            }
+            // Removing the strict shift block as it causes issues with timezones and late employees
+            // if (currentTime < allowedStart || currentTime > shiftEnd) {
+            //     return res.status(400).json({
+            //         success: false,
+            //         message: `You can only clock in during your shift (${employee.shift.startTime} - ${employee.shift.endTime})`,
+            //     });
+            // }
 
             // Check for late status (15 minutes grace period)
             if (currentTime > shiftStart + 15) {

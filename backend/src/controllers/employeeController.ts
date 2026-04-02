@@ -180,9 +180,24 @@ export const createEmployee = async (req: AuthRequest, res: Response) => {
             return res.status(400).json({ success: false, message: 'Phone number already exists' });
         }
 
-        // Generate employee ID
-        const employeeCount = await prisma.employee.count();
-        const employeeId = `EMP${String(employeeCount + 1).padStart(4, '0')}`;
+        // Generate employee ID by finding the highest existing ID
+        const lastEmployee = await prisma.employee.findFirst({
+            orderBy: { createdAt: 'desc' },
+            select: { employeeId: true }
+        });
+        
+        let nextNumber = 1;
+        if (lastEmployee && lastEmployee.employeeId && lastEmployee.employeeId.startsWith('EMP')) {
+            const lastIdParts = lastEmployee.employeeId.match(/\d+$/);
+            if (lastIdParts) {
+                nextNumber = parseInt(lastIdParts[0], 10) + 1;
+            } else {
+                const count = await prisma.employee.count();
+                nextNumber = count + 1;
+            }
+        }
+        
+        const employeeId = `EMP${String(nextNumber).padStart(4, '0')}`;
 
         // Validate department existence
         const department = await prisma.department.findUnique({
@@ -394,9 +409,9 @@ export const deleteEmployee = async (req: AuthRequest, res: Response) => {
             });
         }
 
-        // Delete employee (will cascade delete user due to onDelete: Cascade)
-        await prisma.employee.delete({
-            where: { id },
+        // Delete user (will cascade delete employee due to onDelete: Cascade on the relation)
+        await prisma.user.delete({
+            where: { id: employee.userId },
         });
 
         logger.info(`Employee deleted: ${employee.email}`);
