@@ -19,10 +19,13 @@ const nextConfig = {
             apiUrl = 'https://employee-managemet-system-production.up.railway.app';
         }
 
+        // Ensure no trailing slash to prevent double // in destination routes
+        const cleanApiUrl = apiUrl.replace(/\/+$/, '');
+
         return [
             {
                 source: '/api/:path*',
-                destination: apiUrl + '/api/:path*',
+                destination: cleanApiUrl + '/api/:path*',
             },
         ];
     },
