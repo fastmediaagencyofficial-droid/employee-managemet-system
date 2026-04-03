@@ -36,8 +36,16 @@ export const generateRefreshToken = (payload: JWTPayload): string => {
  */
 export const verifyAccessToken = (token: string): JWTPayload | null => {
     try {
+        if (JWT_SECRET === 'your-secret-key-change-this-in-production') {
+            console.warn('⚠️ WARNING: Using default JWT_SECRET. This is insecure and can cause issues if multiple instances are running.');
+        }
         return jwt.verify(token, JWT_SECRET) as JWTPayload;
-    } catch (_error) {
+    } catch (error: any) {
+        if (error.name === 'TokenExpiredError') {
+            console.log('JWT Error: Token has expired at', error.expiredAt);
+        } else {
+            console.log('JWT Error:', error.message);
+        }
         return null;
     }
 };
