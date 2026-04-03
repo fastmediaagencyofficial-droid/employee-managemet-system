@@ -274,10 +274,14 @@ export const createEmployee = async (req: AuthRequest, res: Response) => {
 
         // Send welcome email (outside transaction)
         try {
-            await sendWelcomeEmail(email, `${firstName} ${lastName}`, plainPassword, employeeId);
-            logger.info(`Welcome email sent to: ${email}`);
+            const emailSent = await sendWelcomeEmail(email, `${firstName} ${lastName}`, plainPassword, employeeId);
+            if (emailSent) {
+                logger.info(`✅ Welcome email sent successfully to: ${email}`);
+            } else {
+                logger.warn(`⚠️ Welcome email was NOT sent to ${email}. Check your EMAIL_USER and EMAIL_PASSWORD variables.`);
+            }
         } catch (emailError) {
-            logger.error(`Failed to send welcome email to ${email}:`, emailError);
+            logger.error(`❌ Failed to send welcome email to ${email}:`, emailError);
             // We don't fail the request if email fails, but we log it.
         }
 

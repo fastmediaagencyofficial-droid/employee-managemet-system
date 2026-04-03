@@ -39,21 +39,24 @@ interface SendEmailOptions {
  * Send email
  */
 export const sendEmail = async (options: SendEmailOptions): Promise<boolean> => {
-  if (!hasCredentials) {
-    logger.warn(`Email simulation (missing credentials): To=${options.to}, Subject=${options.subject}`);
-    return true; // Simulate success
+  const emailUser = process.env.EMAIL_USER;
+  const emailPass = process.env.EMAIL_PASSWORD;
+
+  if (!emailUser || !emailPass) {
+    logger.warn(`Email simulation (missing credentials in ENV): To=${options.to}, Subject=${options.subject}`);
+    return false; // Return false if credentials are missing
   }
 
   try {
     const info = await transporter.sendMail({
-      from: process.env.EMAIL_FROM || `"Employee Management" <${process.env.EMAIL_USER}>`,
+      from: process.env.EMAIL_FROM || `"Employee Management" <${emailUser}>`,
       to: options.to,
       subject: options.subject,
       text: options.text,
       html: options.html,
     });
 
-    logger.info(`Email sent: ${info.messageId}`);
+    logger.info(`Email sent successfully: ${info.messageId}`);
     return true;
   } catch (error) {
     logger.error('Failed to send email:', error);
