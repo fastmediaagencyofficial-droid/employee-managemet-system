@@ -1,32 +1,51 @@
 import nodemailer from 'nodemailer';
 import logger from '../middlewares/logger';
 
-// Check if email credentials are provided
-const hasCredentials = process.env.EMAIL_USER && process.env.EMAIL_PASSWORD;
+// Create transporter lazily to ensure environment variables are loaded
+let transporter: nodemailer.Transporter | null = null;
 
-// Create transporter
-const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-  port: Number(process.env.EMAIL_PORT) || 587,
-  secure: false, // true for 465, false for other ports
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASSWORD,
-  },
-});
+const getTransporter = () => {
+  if (transporter) return transporter;
 
-// Verify connection only if credentials are provided
-if (hasCredentials) {
-  transporter.verify((error) => {
-    if (error) {
-      logger.error('Email service error:', error);
-    } else {
-      logger.info('Email service is ready');
+  const emailUser = process.env.EMAIL_USER;
+  const emailPass = process.env.EMAIL_PASSWORD?.replace(/\s/g, ''); // Remove all spaces from App Password
+
+  if (!emailUser || !emailPass) {
+    return null;
+  }
+
+  transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: emailUser,
+      pass: emailPass,
+    },
+    tls: {
+      rejectUnauthorized: false
     }
   });
-} else {
-  logger.warn('Email service: Missing credentials. Email sending will be skipped.');
-}
+
+  return transporter;
+};
+
+// Initial verification
+const initEmailService = () => {
+  const mailer = getTransporter();
+  if (mailer) {
+    mailer.verify((error) => {
+      if (error) {
+        logger.error('Email service error during init:', error);
+      } else {
+        logger.info('Email service is ready and verified');
+      }
+    });
+  } else {
+    logger.warn('Email service: Missing credentials during init. Email sending will be skipped.');
+  }
+};
+
+// Run init
+initEmailService();
 
 interface SendEmailOptions {
   to: string;
@@ -39,16 +58,16 @@ interface SendEmailOptions {
  * Send email
  */
 export const sendEmail = async (options: SendEmailOptions): Promise<boolean> => {
+  const mailer = getTransporter();
   const emailUser = process.env.EMAIL_USER;
-  const emailPass = process.env.EMAIL_PASSWORD;
 
-  if (!emailUser || !emailPass) {
+  if (!mailer || !emailUser) {
     logger.warn(`Email simulation (missing credentials in ENV): To=${options.to}, Subject=${options.subject}`);
     return false; // Return false if credentials are missing
   }
 
   try {
-    const info = await transporter.sendMail({
+    const info = await mailer.sendMail({
       from: process.env.EMAIL_FROM || `"Employee Management" <${emailUser}>`,
       to: options.to,
       subject: options.subject,
@@ -283,8 +302,9 @@ export const sendWelcomeEmail = async (
     <body>
       <div class="container">
         <div class="header">
-          <h1 style="margin:0; font-size: 24px;">Welcome to the Team!</h1>
-          <p style="margin:10px 0 0; opacity: 0.9;">We're excited to have you on board</p>
+          <h1 style="margin:0; font-size: 28px; font-weight: 800; letter-spacing: -0.5px;">FAST GROUP</h1>
+          <div style="width: 40px; height: 3px; background: #000; margin: 15px auto;"></div>
+          <h2 style="margin:0; font-size: 18px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8;">Welcome to the Team</h2>
         </div>
         <div class="content">
           <p>Hi <strong>${name}</strong>,</p>
